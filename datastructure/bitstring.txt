@@ -1,0 +1,42 @@
+#include <stdio.h>
+int main()
+{
+int a[11]={0,0,0,0,0,0,0,0,0,0};
+int b[11]={0,0,0,0,0,0,0,0,0,0};
+int s1,f,s2,i;
+printf("\n Enter array1 size\n");
+scanf("%d",&s1);
+printf("\n Enter array1 values\n");
+for(int i=0;i<s1;i++)
+{
+ scanf("%d",&f);
+ a[f]=1;
+}
+printf("\n Enter array2 size\n");
+scanf("%d",&s2);
+printf("\n Enter array2 values\n");
+for(i=0;i<s2;i++)
+{
+ scanf("%d",&f);
+ b[f]=1;
+}
+printf("\n Bit string of A\n");
+for(i=0;i<11;i++)
+printf("%d\t",a[i]);
+printf("\n Bit string of B\n");
+for(i=0;i<11;i++)i.
+printf("%d\t",b[i]);
+printf("\n union\n");
+for(i=0;i<11;i++)
+printf("%d\t",a[i]|b[i]);
+printf("%d\t",a[i]|b[i]);
+printf("\n intersection\n");
+for(i=0;i<11;i++)
+ printf("%d\t",a[i]&b[i]);
+printf("\n compliment of A\n");
+for(i=0;i<11;i++)
+ printf("%d\t",!a[i]);
+printf("\n compliment of B\n");
+for(i=0;i<11;i++)
+ printf("%d\t",!b[i]);
+}

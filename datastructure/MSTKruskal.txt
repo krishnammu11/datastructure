@@ -1,0 +1,129 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#define MAX_EDGES 100
+struct Edge {
+    int src, dest, weight;
+};
+struct Graph {
+    int vertices, edges;
+    struct Edge* edge;
+};
+
+struct Subset {
+    int parent, rank;
+};
+struct Graph* createGraph(int vertices, int edges);
+void addEdge(struct Graph* graph, int index, int src, int dest, int weight);
+int find(struct Subset subsets[], int i);
+void unionSets(struct Subset subsets[], int x, int y);
+int compareEdges(const void* a, const void* b);
+void kruskalMST(struct Graph* graph);
+int main() {
+    int vertices, edges;
+    printf("Enter the number of vertices in the graph: ");
+    scanf("%d", &vertices);
+    printf("Enter the number of edges in the graph: ");
+    scanf("%d", &edges);
+
+    struct Graph* graph = createGraph(vertices, edges);
+    for (int i = 0; i < edges; i++) {
+        int src, dest, weight;
+        printf("Enter edge %d (source destination weight): ", i + 1);
+        scanf("%d %d %d", &src, &dest, &weight);
+        addEdge(graph, i, src, dest, weight);
+    }
+
+    // Find and print the Minimum Spanning Tree
+    kruskalMST(graph);
+
+    free(graph->edge);                                                                                                           78
+    free(graph);
+
+    return 0;
+}
+
+struct Graph* createGraph(int vertices, int edges) {
+    struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
+    graph->vertices = vertices;
+    graph->edges = edges;
+    graph->edge = (struct Edge*)malloc(edges * sizeof(struct Edge));
+    return graph;
+}
+
+void addEdge(struct Graph* graph, int index, int src, int dest, int weight) {
+    graph->edge[index].src = src;
+    graph->edge[index].dest = dest;
+    graph->edge[index].weight = weight;
+}
+
+int find(struct Subset subsets[], int i) {
+    if (subsets[i].parent != i)
+        subsets[i].parent = find(subsets, subsets[i].parent);
+
+    return subsets[i].parent;
+}
+
+void unionSets(struct Subset subsets[], int x, int y) {
+    int xroot = find(subsets, x);
+    int yroot = find(subsets, y);
+
+    if (subsets[xroot].rank < subsets[yroot].rank)
+        subsets[xroot].parent = yroot;
+    else if (subsets[xroot].rank > subsets[yroot].rank)
+        subsets[yroot].parent = xroot;
+    else {
+        subsets[yroot].parent = xroot;
+        subsets[xroot].rank++;
+    }
+}
+
+int compareEdges(const void* a, const void* b) {
+    return ((struct Edge*)a)->weight - ((struct Edge*)b)->weight;
+}
+
+void kruskalMST(struct Graph* graph) {
+    int vertices = graph->vertices;
+  int edges = graph->edges;                                                                                                  80
+    struct Edge* result = (struct Edge*)malloc(vertices * sizeof(struct Edge));
+    int e = 0; // An index variable, used for the result[] array
+    int i = 0; // An index variable, used for the sorted edges array
+
+    // Step 1: Sort all the edges in non-decreasing order of their weight
+    qsort(graph->edge, edges, sizeof(graph->edge[0]), compareEdges);
+
+    // Allocate memory for creating subsets
+    struct Subset* subsets = (struct Subset*)malloc(vertices * sizeof(struct Subset));
+
+    // Create subsets with single elements
+    for (int v = 0; v < vertices; v++) {
+        subsets[v].parent = v;
+        subsets[v].rank = 0;
+    }
+
+    // Number of edges to be taken is equal to vertices-1
+    while (e < vertices - 1 && i < edges) {
+        // Step 2: Pick the smallest edge. Increment the index for the next iteration.
+        struct Edge nextEdge = graph->edge[i++];
+
+        int x = find(subsets, nextEdge.src);
+        int y = find(subsets, nextEdge.dest);
+
+        // If including this edge doesn't cause a cycle, add it to the result
+        if (x != y) {
+            result[e++] = nextEdge;
+            unionSets(subsets, x, y);
+        }
+    }
+
+    // Print the MST
+    printf("Minimum Spanning Tree (MST) edges:\n");
+    for (int j = 0; j < e; j++) {
+        printf("Edge %d: %d -- %d\tWeight: %d\n", j + 1, result[j].src, result[j].dest, result[j].weight);
+    }
+
+    // Free allocated memory
+    free(subsets);
+    free(result);
+}
+

@@ -1,0 +1,164 @@
+#include <stdio.h>
+#include <stdlib.h>
+enum Color { RED, BLACK };
+typedef struct Node {
+ int data;
+enum Color color;
+struct Node *left, *right, *parent;
+} Node;
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = newNode->right = newNode->parent = NULL;
+    newNode->color = RED; // Newly inserted node is always colored red
+    return newNode;
+}
+void leftRotate(Node** root, Node* x) {
+    Node* y = x->right;
+    x->right = y->left;
+if (y->left != NULL)
+        y->left->parent = x;
+y->parent = x->parent;
+if (x->parent == NULL)
+*root = y;        x->parent->right = y;                                                                                                        86
+y->left = x;
+    x->parent = y;
+}
+void rightRotate(Node** root, Node* y) {
+    Node* x = y->left;
+    y->left = x->right;
+if (x->right != NULL)
+        x->right->parent = y;
+x->parent = y->parent;
+if (y->parent == NULL)
+        *root = x;
+    else if (y == y->parent->left)
+        y->parent->left = x;
+    else
+        y->parent->right = x;
+x->right = y;
+    y->parent = x;
+}
+void fixViolations(Node** root, Node* newNode) {
+    Node* parent = NULL;
+    Node* grandparent = NULL;
+while ((newNode != *root) && (newNode->color == RED) && (newNode->parent->color == RED)) {
+parent = newNode->parent;
+ grandparent = newNode->parent->parent;
+        if (parent == grandparent->left) {
+            Node* uncle = grandparent->right;
+            if (uncle != NULL && uncle->color == RED) {
+                grandparent->color = RED;
+                parent->color = BLACK;
+
+    else if (x == x->parent->left)
+        x->parent->left = y;
+    else
+        x->parent->right = y;                                                                                                        
+y->left = x;
+    x->parent = y;
+}
+void rightRotate(Node** root, Node* y) {
+    Node* x = y->left;
+    y->left = x->right;
+if (x->right != NULL)
+        x->right->parent = y;
+x->parent = y->parent;
+if (y->parent == NULL)
+        *root = x;
+    else if (y == y->parent->left)
+        y->parent->left = x;
+    else
+        y->parent->right = x;
+x->right = y;
+    y->parent = x;
+}
+void fixViolations(Node** root, Node* newNode) {
+    Node* parent = NULL;
+    Node* grandparent = NULL;
+while ((newNode != *root) && (newNode->color == RED) && (newNode->parent->color == RED)) {
+parent = newNode->parent;
+ grandparent = newNode->parent->parent;
+        if (parent == grandparent->left) {
+            Node* uncle = grandparent->right;
+            if (uncle != NULL && uncle->color == RED) {
+                grandparent->color = RED;
+                parent->color = BLACK;
+     
+        uncle->color = BLACK;                                                                                                   
+                newNode = grandparent;
+            } else {
+                if (newNode == parent->right) {
+                    leftRotate(root, parent);
+                    newNode = parent;
+                    parent = newNode->parent;
+                }
+                rightRotate(root, grandparent);
+                parent->color = BLACK;
+                grandparent->color = RED;
+                newNode = parent;
+            }
+        } else {
+            Node* uncle = grandparent->left;
+            if ((uncle != NULL) && (uncle->color == RED)) {
+                grandparent->color = RED;
+                parent->color = BLACK;
+                uncle->color = BLACK;
+                newNode = grandparent;
+            } else {
+                if (newNode == parent->left) {
+                    rightRotate(root, parent);
+                    newNode = parent;
+                    parent = newNode->parent;
+                }
+leftRotate(root, grandparent);
+                parent->color = BLACK;
+                grandparent->color = RED;
+                newNode = parent;
+            }
+     
+}                                                                                                                                            90
+    }
+ (*root)->color = BLACK; // Root must always be black
+}
+void insert(Node** root, int data) {
+    Node* newNode = createNode(data);
+    Node* parent = NULL;
+    Node* current = *root;
+while (current != NULL) {
+        parent = current;
+        if (newNode->data < current->data)
+            current = current->left;
+        else
+            current = current->right;
+    }
+newNode->parent = parent;
+if (parent == NULL)
+        *root = newNode;
+    else if (newNode->data < parent->data)
+        parent->left = newNode;
+else
+        parent->right = newNode;
+fixViolations(root, newNode);
+}
+void inorderTraversal(Node* root) {
+    if (root != NULL) {
+        inorderTraversal(root->left);
+        printf("%d (%s) ", root->data, (root->color == RED) ? "Red" : "Black");
+        inorderTraversal(root->right);
+    }
+}
+int main() {                                                                                                                               92
+    Node* root = NULL;
+    insert(&root, 10);
+    insert(&root, 20);
+    insert(&root, 30);
+    insert(&root, 15);
+    insert(&root, 25);
+    printf("Inorder Traversal of Red-Black Tree: ");
+    inorderTraversal(root);
+    printf("\n");
+return 0;
+}
+
+
